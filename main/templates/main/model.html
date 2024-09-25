@@ -1,0 +1,148 @@
+{% extends 'main/layout.html' %}
+
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<div style="text-align: center; margin: 5%;">
+    <h4>Укажите данные для запуска модели</h4>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row text-start">
+            <div class="col">
+                <fieldset style="margin: 10px;">
+                    <h5>Шаг времени для извлечения данных</h5>
+                    {{ form.extract_step }}
+                </fieldset>
+            </div>
+            <div class="col">
+                <fieldset style="margin: 10px;">
+                    <h5>Шаг по времени для ионосферы</h5>
+                    {{ form.ion_step }}
+                </fieldset>
+            </div>
+            <div class="col">
+                <fieldset style="margin: 10px;">
+                    <h5>Шаг по времени для термосферы</h5>
+                    {{ form.thermo_step }}
+                </fieldset>
+            </div>
+            <div class="col">
+                <fieldset style="margin: 10px;">
+                    <h5>Вариант расчёта для термосферы</h5>
+                    {{ form.thermo_type }}
+                </fieldset>
+            </div>
+            <div class="col">
+                <fieldset style="margin: 10px;">
+                    <h5>Укажите данные, которые необходимо сохранять</h5>
+                    <div>
+                        <div class="row" style="margin: 10px;">
+                        {% for choice in form.data_to_load %}
+                        <div class="col-4 text-start">
+                            <label for="{{ choice.id_for_label }}">
+                            <input type="checkbox" name="data_to_load" value="{{ choice.choice_label }}" {% if choice.is_checked %}checked{% endif %}>
+                            {{ choice.choice_label }}
+                            </label>
+                            {% if forloop.counter|divisibleby:"3" %}<br>{% endif %}
+                        </div>
+                        {% endfor %}
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-sm" style="margin: 10px;" onclick="check(this.form.data_to_load, 1)">Выделить всё</button>
+                        <button type="button" class="btn btn-secondary btn-sm" style="margin: 10px;" onclick="check(this.form.data_to_load, 0)">Снять выделение</button>
+                        <script>
+                            function check(field, flag) {
+                                if (flag==1) { for (i=0; i < field.length; i++) field[i].checked = true; }
+                                else { for (i=0; i < field.length; i++) field[i].checked = false; }
+                            }
+                        </script>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="row">
+            <h5>Укажите начальные условия для расчета модели</h5>
+            <div class="col" style="padding-right:0px">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Дата</th>
+                            <th scope="col">Сетка</th>
+                            <th scope="col">exe</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for el in init %}
+                        <tr>
+                            <td>{{ el.id }}</td>
+                            <td>{{ el.date }}</td>
+                            <td>{{ el.grid }}</td>
+                            <td>{{ el.exe }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col" style="padding-left:0px">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for el in form.init_cond %}
+                        <tr>
+                            <td>{{ el }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <button type="submit" style="margin: 30px;" class="btn btn-dark">Запустить расчёт модели</button>
+        </div>
+    </form>
+    <div class="row">
+        <div class="col">
+            <h5>Существующие данные</h5>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Дата</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for el in calc %}
+                    <tr>
+                        <td>{{ el.id }}</td>
+                        <td>{{ el.date }}</td>
+                        <td><button class="btn btn-secondary btn-sm journal-btn">Журнал</button></td>
+                        <input type="hidden" class="log-field" value="{{ el.log }}">
+                        <!--Вывод лога-->
+                        <script>
+                            $(document).ready(function() {
+                                $('.journal-btn').on('click', function() {
+                                    var logContent = $(this).closest('tr').find('.log-field').val();
+                                    $('.log-area').val(logContent + '\n');
+                                });
+                            });
+                        </script>
+                        <td><form action="delete_calc" method="post">{% csrf_token %}
+                            <input type="hidden" name="item_id" value="{{ el.id }}">
+                            <button class="btn btn-danger btn-sm">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col">
+            <h5>Журнал событий</h5>
+            <textarea class="form-control log-area" readonly></textarea>
+        </div>
+    </div>
+</div>
+{% endblock %}

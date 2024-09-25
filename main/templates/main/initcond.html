@@ -1,0 +1,73 @@
+{% extends 'main/layout.html' %}
+
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<div style="text-align: center; margin: 5%;">
+    <h4>Укажите данные для расчёта начальных условий</h4>
+    <form action="initcond" method="post">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col">
+            <h5>Дата</h5>
+            {{ form.date }}
+        </div>
+        <div class="col">
+            <h5>Тип сетки</h5>
+            {{ form.grid }}
+        </div>
+        <div class="col">
+            <h5>Тип исполняемого файла</h5>
+            {{ form.exe }}
+        </div>
+    </div>
+    <div class="d-grid gap-2 col-6 mx-auto">
+        <button type="submit" style="margin: 30px;" class="btn btn-dark">Запустить расчёт начальных условий</button>
+    </div>
+    </form>
+    <div class="row">
+        <div class="col">
+            <h5>Существующие начальные условия</h5>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Дата</th>
+                    <th scope="col">Сетка</th>
+                    <th scope="col">EXE</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for el in init_cond %}
+                <tr>
+                    <td>{{ el.id }}</td>
+                    <td>{{ el.date }}</td>
+                    <td>{{ el.grid }}</td>
+                    <td>{{ el.exe }}</td>
+                    <td><button class="btn btn-secondary btn-sm journal-btn">Журнал</button></td>
+                    <input type="hidden" class="log-field" value="{{ el.log }}">
+                    <!--Вывод лога-->
+                    <script>
+                        $(document).ready(function() {
+                            $('.journal-btn').on('click', function() {
+                                var logContent = $(this).closest('tr').find('.log-field').val();
+                                $('.log-area').val(logContent + '\n');
+                            });
+                        });
+                    </script>
+                    <td><form action="delete_init" method="post">{% csrf_token %}
+                        <input type="hidden" name="item_id" value="{{ el.id }}">
+                        <button class="btn btn-danger btn-sm">Удалить</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="col">
+            <h5>Журнал событий</h5>
+            <textarea class="form-control log-area" readonly></textarea>
+        </div>
+    </div>
+</div>
+{% endblock %}

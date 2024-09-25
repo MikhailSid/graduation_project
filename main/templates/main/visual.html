@@ -1,0 +1,71 @@
+{% extends 'main/layout.html' %}
+{% block content %}
+<div style="margin: 20px; max-width: 50%;">
+    <div class="row" style="margin: 10px;">
+        <h5>Укажите данные для визуализации:</h5>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Дата</th>
+                <th scope="col"><i class="bi bi-check-square"></i></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row">1</th>
+                <td>21.06.2014</td>
+                <td><input type="radio" id="model1" name="model" checked/></td>
+            </tr>
+            <tr>
+                <th scope="row">2</th>
+                <td>22.06.2014</td>
+                <td><input type="radio" id="model2" name="model"/></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row" style="margin: 10px;">
+        <div class="col">
+            <fieldset style="margin: 10px;">
+                <h5>Физический параметр:</h5>
+                <input class="form-control"/>
+            </fieldset>
+        </div>
+        <div class="col">
+            <fieldset style="margin: 10px;">
+                <h5>Блок модели:</h5>
+                <div>
+                    <input type="radio" id="exe1" name="exe" value="1" checked />
+                    <label for="exe1">Сфера</label>
+                </div>
+                <div>
+                    <input type="radio" id="exe2" name="exe" value="2" />
+                    <label for="exe2">Трубка</label>
+                </div>
+                <div>
+                    <input type="radio" id="exe3" name="exe" value="3" />
+                    <label for="exe3">Потенциал</label>
+                </div>
+            </fieldset>
+        </div>
+        <div class="col">
+            <fieldset style="margin: 10px;">
+                <h5>Высота:</h5>
+                <input class="form-control"/>
+            </fieldset>
+        </div>
+    </div> 
+    <div class="row" style="text-align: center;">
+        <div class="col">
+            <button type="button" style="margin: 10px;" class="btn btn-primary">Отрисовать</button>
+        </div>
+        <div class="col">
+            <button type="button" style="margin: 10px;" class="btn btn-info">Справка</button>
+        </div>
+    </div>
+    
+    {{ graph|safe }}
+
+</div>
+{% endblock %}
